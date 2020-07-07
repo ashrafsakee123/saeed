@@ -1,0 +1,286 @@
+﻿<%@ Master Language="C#" AutoEventWireup="true" CodeBehind="SiteMaster.master.cs" Inherits="SAEED.WebPL.SiteMaster" %>
+
+<!DOCTYPE html>
+
+<html lang="en" dir="rtl">
+<head runat="server">
+    <link href="css/cairo.css" rel="stylesheet" />
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="www.impressdsc.com">
+    <meta name="author" content="Impress">
+
+    <script src="js/jquery.js"></script>
+
+    <link rel="shortcut icon" href="images/favicon.png">
+    <title>مركز الشارقة لخدمات المستثمرين </title>
+    <!--Core CSS -->
+
+    <link href="bs3/css/bootstrap.min.css" rel="stylesheet">
+    <link href="js/jquery-ui/jquery-ui-1.10.1.custom.min.css" rel="stylesheet">
+    <link href="css/bootstrap-reset.css" rel="stylesheet">
+    <link href="font-awesome/css/font-awesome.css" rel="stylesheet">
+    <link href="js/jvector-map/jquery-jvectormap-1.2.2.css" rel="stylesheet">
+    <link href="css/clndr.css" rel="stylesheet">
+    <!--clock css-->
+    <link href="js/css3clock/css/style.css" rel="stylesheet">
+    <!--Morris Chart CSS -->
+    <link rel="stylesheet" href="js/morris-chart/morris.css">
+    <!-- Custom styles for this template -->
+    <link href="css/style.css" rel="stylesheet">
+    <link href="css/style-responsive.css" rel="stylesheet" />
+    <link href="css/default-theme.css" rel="stylesheet" />
+    <asp:ContentPlaceHolder ID="hjs" runat="server">
+    </asp:ContentPlaceHolder>
+</head>
+<body>
+    <form id="form1" runat="server">
+        <asp:ScriptManager ID="ScriptManager1" runat="server" EnablePageMethods="True"></asp:ScriptManager>
+        <section id="container">
+            <!--header start-->
+            <header class="header fixed-top clearfix">
+                <!--logo start-->
+                <div class="brand">
+
+                    <a href="Default.aspx" class="logo" style="color: white; padding-right: 20px">
+                        <img src="images/logo.png" style="width: 80%" />
+
+                    </a>
+                    <div class="sidebar-toggle-box">
+                        <div class="fa fa-bars"></div>
+                    </div>
+                </div>
+                <!--logo end-->
+                <div class="nav notify-row" id="top_menu">
+                    <!--  notification start -->
+                    <ul class="nav top-menu">
+                        <asp:UpdatePanel ID="UpdatePanel1" runat="server" UpdateMode="Conditional">
+                            <Triggers>
+                                <asp:AsyncPostBackTrigger ControlID="Timer1" EventName="Tick" />
+                            </Triggers>
+                            <ContentTemplate>
+
+                                <!-- notification dropdown start-->
+                                <li id="header_notification_bar" class="dropdown">
+                                    <a data-toggle="dropdown" class="dropdown-toggle" href="#" aria-expanded="false">
+
+                                        <i class="fa fa-bell-o"></i>
+                                        <span class="<%= LabelNotiCount.Text==""?"": "badge bg-warning" %>">
+                                            <asp:Label ID="LabelNotiCount" runat="server" Text=""></asp:Label></span>
+                                    </a>
+                                    
+                                    <%
+                                        if (Session["noti"] == null)
+                                            Session["noti"] = 0;
+                                        if (Convert.ToInt32( LabelNotiCount.Text!=""? LabelNotiCount.Text:"0") > Convert.ToInt32(Session["noti"]))
+                                        {%>
+                                    <audio src="sound/notifi.mp3" autoplay="autoplay" />
+                                    
+                                    <% Session["noti"]=Convert.ToInt32( LabelNotiCount.Text);
+                                        } %>
+                                    <ul class="dropdown-menu extended notification">
+                                        <li>
+                                            <p>تنبيهات</p>
+                                        </li>
+
+
+                                        <asp:Repeater ID="RepeaterNoti" runat="server">
+                                            <ItemTemplate>
+                                                <li>
+                                                    <div class="alert alert-warning clearfix">
+                                                        <span class="alert-icon"><i class="fa fa-bolt"></i></span>
+                                                        <div class="noti-info">
+
+                                                            <a href="ViewTransaction.aspx?id=<%# Eval("TransactionID") %>"><%# Eval("ActionStatus").ToString() +" للمعاملة رقم " +  Eval("TNo").ToString()%> </a>
+
+                                                        </div>
+                                                    </div>
+                                                </li>
+                                            </ItemTemplate>
+                                        </asp:Repeater>
+
+                                        <asp:Timer ID="Timer1" Interval="10000" runat="server" OnTick="Timer1_Tick"></asp:Timer>
+
+
+
+                                    </ul>
+                                </li>
+                                <!-- notification dropdown end -->
+                            </ContentTemplate>
+
+                        </asp:UpdatePanel>
+                    </ul>
+                    <!--  notification end -->
+                </div>
+
+
+
+                <div class="top-nav clearfix">
+                    <!--search & user info start-->
+                    <ul class="nav pull-left top-menu">
+                        <!-- user login dropdown start-->
+                        <li class="dropdown">
+                            <a data-toggle="dropdown" class="dropdown-toggle" href="#">
+                                <img alt="" src='PicHandler.ashx?t=employee&id=<%=((SAEED.BLL.Mapper.UserData)Session["user"]).EmpID %>'>
+                                <span class="username">
+                                    <%=((SAEED.BLL.Mapper.UserData)Session["user"]).EmployeeName != null ? ((SAEED.BLL.Mapper.UserData)Session["user"]).EmployeeName : SAEED.DSL.EncryptManagement.DecryptStringAES(((SAEED.BLL.Mapper.UserData)Session["user"]).UserName, SAEED.DSL.Look.Insert())  %>
+                                </span>
+                                <b class="caret"></b>
+                            </a>
+                            <ul class="dropdown-menu extended logout">
+                                                                    <% if (((SAEED.BLL.AccessRoleList)Session["role"]) == SAEED.BLL.AccessRoleList.مدخل_بيانات )
+                                                                            {%>
+
+                                       <li><a href="EmployeeProfile.aspx"><i class=" fa fa-suitcase"></i>الملف الشخصي</a></li>
+                                <%} %>
+                                <li><a href="Logout.aspx"><i class="fa fa-key"></i>تسجيل الخروج</a></li>
+                            </ul>
+                        </li>
+                        <!-- user login dropdown end -->
+                        <li>
+                            <div class="toggle-left-box" style="display: none;">
+                                <div class="fa fa-bars"></div>
+                            </div>
+                        </li>
+                    </ul>
+                    <!--search & user info end-->
+                </div>
+            </header>
+            <!--header end-->
+            <!--sidebar start-->
+            <aside>
+                <div id="sidebar" class="nav-collapse">
+                    <!-- sidebar menu start-->
+                    <div class="rightside-navigation">
+                        <ul class="sidebar-menu" id="nav-accordion">
+                            <% if (((SAEED.BLL.AccessRoleList)Session["role"]) == SAEED.BLL.AccessRoleList.مدير_المركز || ((SAEED.BLL.AccessRoleList)Session["role"]) == SAEED.BLL.AccessRoleList.مدقق || ((SAEED.BLL.AccessRoleList)Session["role"]) == SAEED.BLL.AccessRoleList.الإدارة)
+                                {%>
+                            <li>
+                                <a href="Default.aspx">
+                                    <i class="fa fa-dashboard"></i>
+                                    <span>الرئيسية</span>
+                                </a>
+                            </li>
+
+                            <% }
+                                if (((SAEED.BLL.AccessRoleList)Session["role"]) == SAEED.BLL.AccessRoleList.مدقق)
+                                { %>
+
+                            <li>
+                                <a href="CompletedTransactions.aspx">
+                                    <i class="fa fa-list"></i>
+                                    <span>المعاملات</span>
+                                </a>
+                            </li>
+                            <%} %>
+
+                            <% if (((SAEED.BLL.AccessRoleList)Session["role"]) == SAEED.BLL.AccessRoleList.مدير_المركز || ((SAEED.BLL.AccessRoleList)Session["role"]) == SAEED.BLL.AccessRoleList.مدخل_بيانات)
+                                { %>
+
+                            <li>
+                                <a href="TransactionsList.aspx">
+                                    <i class="fa fa-list"></i>
+                                    <span>المعاملات</span>
+                                </a>
+                            </li>
+                             
+                                <%}  
+                                   if ( ((SAEED.BLL.AccessRoleList)Session["role"]) == SAEED.BLL.AccessRoleList.مدخل_بيانات)
+                                { %>
+                             <li>
+                                <a href="AddTransaction.aspx">
+                                    <i class="fa fa-list"></i>
+                                    <span>أضافة معاملة</span>
+                                </a>
+                            </li>
+                             <li>
+                                <a href="OnlineTransactions.aspx">
+                                    <i class="fa fa-list"></i>
+                                    <span> معاملات البلدية</span>
+                                </a>
+                            </li>
+                             <li>
+                                <a href="EReports.aspx">
+                                    <i class="fa fa-list"></i>
+                                    <span> تقارير </span>
+                                </a>
+                            </li>
+                            <%} %>
+
+                            <% if ((SAEED.BLL.AccessRoleList)Session["role"] == SAEED.BLL.AccessRoleList.مدير_المركز)
+                                {   %>
+                            <li>
+                                <a href="OnlineTransactions.aspx">
+                                    <i class="fa fa-list"></i>
+                                    <span> معاملات البلدية</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="ClientsList.aspx">
+                                    <i class="fa fa-users"></i>
+                                    <span>المتعاملين</span>
+                                </a>
+                            </li>
+                          
+                            <li class="sub-menu">
+                                <a href="javascript:;">
+                                    <i class="fa fa-user"></i>
+                                    <span>الموظفين </span>
+                                </a>
+                                <ul class="sub">
+                                    <li><a href="Employees.aspx">الموظفين</a></li>
+
+                                    <li><a href="NewEmployee.aspx">إضافة موظف</a></li>
+                                </ul>
+                            </li>
+                            <li class="sub-menu">
+                                <a href="javascript:;">
+                                    <i class=" fa fa-lock"></i>
+                                    <span>المستخدمين</span>
+                                </a>
+                                <ul class="sub">
+                                    <li><a href="Users.aspx">المستخدمين</a></li>
+                                    <li><a href="NewUser.aspx">اضافة مستخدم</a></li>
+                                </ul>
+                            </li>
+                              <%} 
+                                    if ((SAEED.BLL.AccessRoleList)Session["role"] == SAEED.BLL.AccessRoleList.مدير_المركز  || (SAEED.BLL.AccessRoleList)Session["role"] == SAEED.BLL.AccessRoleList.مدقق)
+                                {   %>
+                             <li>
+                                <a href="Reports.aspx">
+                                    <i class="fa fa-bar-chart-o"></i>
+                                    <span>التقارير</span>
+                                </a>
+                            </li>
+                                <%} 
+                                    if ((SAEED.BLL.AccessRoleList)Session["role"] == SAEED.BLL.AccessRoleList.مدير_المركز  || (SAEED.BLL.AccessRoleList)Session["role"] == SAEED.BLL.AccessRoleList.مدير_النظام)
+                                {   %>
+                            <li>
+                                <a href="Setting.aspx">
+                                    <i class="fa fa-cog"></i>
+                                    <span>الاعدادات</span>
+                                </a>
+                            </li>
+                            <%} %>
+                        </ul>
+                    </div>
+                    <!-- sidebar menu end-->
+                </div>
+            </aside>
+            <!--sidebar end-->
+            <!--main content start-->
+            <section id="main-content">
+                <section class="wrapper">
+                    <%--                    <asp:Timer ID="Timer1" runat="server" OnTick="Timer1_Tick" Interval="60000"></asp:Timer>--%>
+
+                    <asp:ContentPlaceHolder ID="ContentPlaceHolder1" runat="server">
+                    </asp:ContentPlaceHolder>
+                </section>
+            </section>
+        </section>
+    </form>
+
+  
+</body>
+</html>

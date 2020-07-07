@@ -1,0 +1,226 @@
+﻿<%@ Master Language="C#" AutoEventWireup="true" CodeBehind="TapSiteMaster.Master.cs" Inherits="SAEED.WebPL.TapSiteMaster" %>
+
+<!DOCTYPE html>
+
+<html lang="en" dir="rtl">
+<head runat="server">
+    <link href="css/cairo.css" rel="stylesheet" />
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="ThemeBucket">
+
+    <script src="js/jquery.js"></script>
+
+    <link rel="shortcut icon" href="images/favicon.png">
+    <title>مركز الشارقة لخدمات المستثمرين </title>
+    <!--Core CSS -->
+
+    <link href="bs3/css/bootstrap.min.css" rel="stylesheet">
+    <link href="js/jquery-ui/jquery-ui-1.10.1.custom.min.css" rel="stylesheet">
+    <link href="css/bootstrap-reset.css" rel="stylesheet">
+    <link href="font-awesome/css/font-awesome.css" rel="stylesheet">
+    <link href="js/jvector-map/jquery-jvectormap-1.2.2.css" rel="stylesheet">
+    <link href="css/clndr.css" rel="stylesheet">
+    <!--clock css-->
+    <link href="js/css3clock/css/style.css" rel="stylesheet">
+    <!--Morris Chart CSS -->
+    <link rel="stylesheet" href="js/morris-chart/morris.css">
+    <!-- Custom styles for this template -->
+    <link href="css/style.css" rel="stylesheet">
+    <link href="css/style-responsive.css" rel="stylesheet" />
+    <link href="css/default-theme.css" rel="stylesheet" />
+    <asp:ContentPlaceHolder ID="hjs" runat="server">
+    </asp:ContentPlaceHolder>
+</head>
+<body>
+    <form id="form1" runat="server">
+        <asp:ScriptManager ID="ScriptManager1" runat="server" EnablePageMethods="True"></asp:ScriptManager>
+        <section id="container">
+            <!--header start-->
+            <header class="header fixed-top clearfix">
+                <!--logo start-->
+                <div class="brand">
+
+                    <a href="NewTransaction.aspx" class="logo" style="color: white; padding-right: 20px">
+                        <img src="images/logo.png" style="width: 80%" />
+                    </a>
+                    <div class="sidebar-toggle-box">
+                        <div class="fa fa-bars"></div>
+                    </div>
+                </div>
+                <!--logo end-->
+
+             <div class="nav notify-row" id="top_menu">
+ <!--  notification start -->
+    <ul class="nav top-menu">
+       <asp:UpdatePanel ID="UpdatePanel1" runat="server" UpdateMode="Conditional">
+                  <Triggers>
+                            <asp:AsyncPostBackTrigger ControlID="Timer1" EventName="Tick" />
+                        </Triggers>
+                 <ContentTemplate>
+      
+        <!-- notification dropdown start-->
+        <li id="header_notification_bar" class="dropdown">
+            <a data-toggle="dropdown" class="dropdown-toggle" href="#" aria-expanded="false">
+
+                <i class="fa fa-bell-o"></i>
+                <span class="<%=LabelNotiCount.Text==""?"": "badge bg-warning" %>>
+                    <asp:Label ID="LabelNotiCount" runat="server" Text=""></asp:Label></span>
+            </a>
+
+            <%
+                                        if (Session["noti"] == null)
+                                            Session["noti"] = 0;
+                                        if (Convert.ToInt32( LabelNotiCount.Text!=""? LabelNotiCount.Text:"0") > Convert.ToInt32(Session["noti"]))
+                                        {%>
+                                    <audio src="sound/notifi.mp3" autoplay="autoplay" />
+                                    
+                                    <% Session["noti"]=Convert.ToInt32( LabelNotiCount.Text);
+                                        } %>
+         <ul class="dropdown-menu extended notification">
+                <li>
+                    <p>تنبيهات</p>
+                </li>
+          
+
+             <asp:Repeater ID="RepeaterNoti" runat="server">
+                 <ItemTemplate>
+                      <li>
+                    <div class="alert alert-warning clearfix">
+                        <span class="alert-icon"><i class="fa fa-bolt"></i></span>
+                        <div class="noti-info">
+                        
+                            <a href="Transaction.aspx?id=<%# Eval("TransactionID") %>"> <%# Eval("ActionStatus").ToString() +" للمعاملة رقم " +  Eval("TNo").ToString()%> </a>
+                          
+                        </div>
+                    </div>
+                </li>
+                 </ItemTemplate>
+             </asp:Repeater>
+               
+                              <asp:Timer ID="Timer1" Interval="10000" runat="server" OnTick="Timer1_Tick"></asp:Timer>
+              
+             
+            </ul>
+        </li>
+        <!-- notification dropdown end -->
+                    </ContentTemplate>
+
+             </asp:UpdatePanel>
+    </ul>
+    <!--  notification end -->
+</div>
+                               
+   
+
+                <div class="top-nav clearfix">
+                    <!--search & user info start-->
+                    <ul class="nav pull-left top-menu">
+
+                        <!-- user login dropdown start-->
+                        <li class="dropdown">
+                            <a data-toggle="dropdown" class="dropdown-toggle" href="#">
+                                <img alt="" src='PicHandler.ashx?t=employee&id=<%=((SAEED.BLL .Mapper.UserData)Session["user"]).EmpID %>'>
+                                <span class="username">
+                                    <%=((SAEED.BLL .Mapper.UserData)Session["user"]).EmployeeName != null ? ((SAEED.BLL .Mapper.UserData)Session["user"]).EmployeeName : SAEED.DSL.EncryptManagement.DecryptStringAES(((SAEED.BLL .Mapper.UserData)Session["user"]).UserName, SAEED.DSL.Look.Insert())  %>
+
+                                </span>
+                                <b class="caret"></b>
+                            </a>
+                            <ul class="dropdown-menu extended logout">
+                                <%--                                <li><a href="MyProfile.aspx"><i class=" fa fa-suitcase"></i>الملف الشخصي</a></li>--%>
+
+                                <li><a href="Logout.aspx"><i class="fa fa-key"></i>تسجيل الخروج</a></li>
+                            </ul>
+                        </li>
+                        <!-- user login dropdown end -->
+                        <li>
+                            <div class="toggle-left-box" style="display: none;">
+                                <div class="fa fa-bars"></div>
+                            </div>
+                        </li>
+                    </ul>
+                    <!--search & user info end-->
+                </div>
+            </header>
+            <!--header end-->
+            <!--sidebar start-->
+            <aside>
+                <div id="sidebar" class="nav-collapse hide-right-bar">
+                    <!-- sidebar menu start-->
+                    <div class="rightside-navigation">
+                        <ul class="sidebar-menu" id="nav-accordion">
+                              <% if (((SAEED.BLL.AccessRoleList)Session["role"]) == SAEED.BLL.AccessRoleList.المشرف)
+                                  {%>
+                            <li>
+                                <a href="NewTransaction.aspx">
+                                    <i class="fa fa-dashboard"></i>
+                                    <span>الرئيسية</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="Transactions.aspx">
+                                    <i class="fa fa-list"></i>
+                                    <span>المعاملات</span>
+                                </a>
+                            </li>
+
+                            <li>
+                                <a href="Clients.aspx">
+                                    <i class="fa fa-users"></i>
+                                    <span>المتعاملين</span>
+                                </a>
+                            </li>
+
+                             <li>
+                                <a href="SReport.aspx">
+                                    <i class="fa fa-list"></i>
+                                    <span> تقارير </span>
+                                </a>
+                            </li>
+                              
+                            <%}
+    else if (((SAEED.BLL.AccessRoleList)Session["role"]) == SAEED.BLL.AccessRoleList.مندوب)
+    {%>
+                            <li>
+                                <a href="ShelfTransactions.aspx">
+                                    <i class="fa fa-list"></i>
+                                    <span>المعاملات</span>
+                                </a>
+                            </li>     
+                         
+                            <%
+                                }%>
+                        </ul>
+                    </div>
+                    <!-- sidebar menu end-->
+                </div>
+            </aside>
+            <!--sidebar end-->
+            <!--main content start-->
+            <section id="main-content" class="merge-right">
+                <section class="wrapper">
+                    <%--                    <asp:Timer ID="Timer1" runat="server" OnTick="Timer1_Tick" Interval="60000"></asp:Timer>--%>
+
+                    <asp:ContentPlaceHolder ID="ContentPlaceHolder1" runat="server">
+                    </asp:ContentPlaceHolder>
+                </section>
+            </section>
+        </section>
+
+    </form>
+
+
+    <script type="text/javascript">
+        $(function () {
+            $("a[href='" + document.location.href.match(/[^\/]+$/)[0] + "']").addClass("active");
+            $("a[href='" + document.location.href.match(/[^\/]+$/)[0] + "']").parents('li:eq(0)').addClass("active");
+            $("a[href='" + document.location.href.match(/[^\/]+$/)[0] + "']").parents('ul:eq(0)').css("display", "block")
+            $("a[href='" + document.location.href.match(/[^\/]+$/)[0] + "']").parents('li:eq(1)').find("a").addClass("active");
+        });
+    </script>
+
+</body>
+</html>
